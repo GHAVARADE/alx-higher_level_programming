@@ -1,70 +1,42 @@
 #include "lists.h"
-#include <stdio.h>
-
+int recursive_check(listint_t **left, listint_t *right);
+/**
+ * is_palindrome - check if a singly-linked list palindromic
+ * @head: list head
+ *
+ * Return: 1 if palindromic, 0 if not
+ */
 int is_palindrome(listint_t **head)
 {
-  listint_t *nhead, *tort, *hare, *ptort;
-  listint_t *cut = NULL, *half, *it1, *it2;
+	if (!head || !(*head)) /* if list is empty */
+		return (1);
 
-  if (!head || !*head)
-    return (1);
-
-  nhead = *head;
-  if (nhead->next != NULL)
-    {
-      for (hare = nhead, tort = nhead; hare != NULL && hare->next != NULL;
-	   ptort = tort, tort = tort->next)
-	hare = hare->next->next;
-      if (hare != NULL)
-	{
-	  cut = tort;
-	  tort = tort->next;
-	}
-      ptort->next = NULL;
-      half = tort;
-      it1 = reverse_listint(&half);
-      for (it2 = *head; it2; it1 = it1->next, it2 = it2->next)
-	{
-	  if (it2->n != it1->n)
-	    return (0);
-	}
-      if (cut == NULL)
-	ptort->next = half;
-      else
-	{
-	  ptort->next = cut;
-	  cut->next = half;
-	}
-    }
-
-  return (1);
+	if (recursive_check(head, *head))
+		return (1);
+	else
+		return (0);
 }
-
 /**
- * reverse_listint - Reverses a linked list in pladce
- * @head: Pointer to a pointer pointing to the first item in the list
+ * recursive_check - check if list is palindromic
+ * @left: left pointer
+ * @right: right pointer
  *
- * Return: The new head of the reversed list
+ * Return: 1 if node values match, 0 if they don't
  */
-listint_t *reverse_listint(listint_t **head)
+int recursive_check(listint_t **left, listint_t *right)
 {
-  listint_t *next = NULL, *prev = NULL;
+	int is_pal = 0;
 
-  if (!head || !*head)
-    return (NULL);
+	if (right) /* recurse until right pointer is NULL */
+		is_pal = recursive_check(left, right->next);
+	else
+		return (1);
 
-  while ((*head)->next)
-    {
-      next = (*head)->next;
-
-      (*head)->next = prev;
-
-      prev = *head;
-
-      *head = next;
-    }
-
-  (*head)->next = prev;
-
-  return (*head);
+	if (is_pal == 1) /* if last values matched */
+		if ((*left)->n == right->n) /* compare current values */
+		{
+			*left = (*left)->next; /* shift left pointer right */
+			return (1);
+		}
+	return (0);
 }
